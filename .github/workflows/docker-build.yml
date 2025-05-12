@@ -1,0 +1,44 @@
+name: Docker CI/CD
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'      # e.g., v0.1.0
+  workflow_dispatch:   # allow manual runs
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write       # allow pushing to GHCR
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build widget image
+      - name: Build widget
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/chatbot-widget:${{ github.ref_name }} -f widget/Dockerfile widget
+          docker tag ghcr.io/${{ github.repository_owner }}/chatbot-widget:${{ github.ref_name }} ghcr.io/${{ github.repository_owner }}/chatbot-widget:latest
+
+      # Build api image
+      - name: Build api
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/chatbot-api:${{ github.ref_name }} -f backend/Dockerfile backend
+          docker tag ghcr.io/${{ github.repository_owner }}/chatbot-api:${{ github.ref_name }} ghcr.io/${{ github.repository_owner }}/chatbot-api:latest
+
+      # Log in to GHCR
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Push images
+      - name: Push images
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/chatbot-widget:${{ github.ref_name }}
+          docker push ghcr.io/${{ github.repository_owner }}/chatbot-widget:latest
+          docker push ghcr.io/${{ github.repository_owner }}/chatbot-api:${{ github.ref_name }}
+          docker push ghcr.io/${{ github.repository_owner }}/chatbot-api:latest

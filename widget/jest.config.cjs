@@ -1,1 +1,10 @@
-module.exports = { testEnvironment: "node" };
+module.exports = {
+    preset: 'ts-jest',
+    testEnvironment: 'jsdom',
+    transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+    },
+    moduleNameMapper: {
+        '\\.(css)$': 'identity-obj-proxy',   // stub CSS imports
+    },
+};

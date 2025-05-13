@@ -30,10 +30,10 @@ jobs:
       # Build api image
       - name: Build api
         run: |
-          docker build -t ghcr.io/${{ steps.vars.outputs.owner_lc }}/chatbot-api:${{ github.ref_name }} \
-                       -f backend/Dockerfile backend
-          docker tag ghcr.io/${{ steps.vars.outputs.owner_lc }}/chatbot-api:${{ github.ref_name }} \
-                     ghcr.io/${{ steps.vars.outputs.owner_lc }}/chatbot-api:latest
+            docker build -t ghcr.io/${{ steps.vars.outputs.owner_lc }}/chatbot-api:${{ github.ref_name }} \
+                 -f backend/Dockerfile .
+            docker tag ghcr.io/${{ steps.vars.outputs.owner_lc }}/chatbot-api:${{ github.ref_name }} \
+               ghcr.io/${{ steps.vars.outputs.owner_lc }}/chatbot-api:latest
 
       # Log in to GHCR
       - name: Log in to GHCR
